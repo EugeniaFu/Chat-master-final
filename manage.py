@@ -3,7 +3,7 @@
 import os
 import sys
 
-
+ #COMENTARIO DE PRUEBA PARA SUBIRLO A GITHUB
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wechatpp.settings')
