@@ -1,0 +1,398 @@
+{% extends 'base.html' %}
+
+
+{% block title %}Home{% endblock %}
+
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+<style>
+  body {
+    background: linear-gradient(135deg, #4A148C, #7B1FA2);
+    font-family: 'Poppins', sans-serif;
+  }
+
+
+  .chat-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  .btn-logout {
+    background: #7b1fa2; /* Morado fuerte */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+
+  .chat-header {
+    background: #6A1B9A;
+    color: white;
+    padding: 15px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+  }
+
+
+  .chat-body {
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #EDE7F6;
+    border-radius: 0 0 10px 10px;
+  }
+
+
+  .chat-message {
+    display: flex;
+    max-width: 75%;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    font-size: 14px;
+    word-wrap: break-word;
+    clear: both;
+  }
+
+
+  .text-left {
+    background-color: #FFFFFF;
+    color: #6A1B9A;
+    align-self: flex-start;
+    border-radius: 8px 8px 8px 0;
+    padding: 8px 12px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+
+  .text-right {
+    background-color: #7E57C2;
+    color: white;
+    align-self: flex-end;
+    border-radius: 8px 8px 0 8px;
+    text-align: right;
+    margin-left: auto;
+    padding: 8px 12px;
+    box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+
+  .chat-footer {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #ddd;
+    border-radius: 0 0 10px 10px;
+  }
+
+
+  #my_input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #6A1B9A;
+    border-radius: 20px;
+    outline: none;
+    background: #D1C4E9;
+    color: #6A1B9A;
+  }
+
+
+  #submit_button {
+    background: #7E57C2;
+    border: none;
+    padding: 12px 20px;
+    margin-left: 10px;
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+
+  #submit_button:hover {
+    background: #6A1B9A;
+  }
+
+
+  #emoji_button, #file_input_label {
+    background: #6A1B9A;
+    border: none;
+    padding: 10px;
+    margin: 0 5px;
+    color: white;
+    font-size: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+
+  #file_input {
+    display: none;
+  }
+
+
+  .file-link {
+    color: #6A1B9A;
+    text-decoration: none;
+  }
+
+
+  .file-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+
+<div class="chat-container">
+  <div class="chat-header">
+    💬 Chat Room: {{ room_name }}
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-logout">Cerrar sesión</button>
+    </form> 
+  </div>
+
+
+  <div class="chat-body" id="chatbox">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="chat-message {% if message.user == request.user %}text-right{% else %}text-left{% endif %}">
+          <b>{{ message.user.username }}</b>:
+          {% if message.content %}
+            {{ message.content }}
+          {% endif %}
+          {% if message.attachment %}
+            <br><a href="{{ message.attachment.url }}" class="file-link" target="_blank">Ver archivo</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-center text-muted">No hay mensajes en esta sala.</p>
+    {% endif %}
+  </div>
+
+
+  <div class="chat-footer">
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+        Emoji
+      </button>
+      <div class="dropdown-menu">
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F604;"> 😀</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F601;"> 😁</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F606;"> 😆</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F605;"> 😅</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F602;"> 😂</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F923;"> 🤣</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F609;"> 😉</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F60A;"> 😊</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F60D;"> 😍</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F618;"> 😘</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F617;"> 😗</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F61A;"> 😚</span>
+        <span class="dropdown-item emoji-select" data-emoji="&#x1F619;"> 😙</span>
+      </div>
+    </div>
+    <label for="file_input" id="file_input_label">📎</label>
+    <input type="file" id="file_input">
+   
+    <div id="file_preview_container" style="display: none; margin-left: 10px;">
+        <img id="image_preview" style="max-width: 100px; display: none; border-radius: 5px;">
+        <p id="file_name" style="font-size: 12px; color: #6A1B9A; margin: 5px 0 0 0;"></p>
+    </div>
+
+
+    <input id="my_input" type="text" placeholder="Escribe un mensaje..." required>
+    <button id="submit_button">Enviar</button>
+  </div>
+</div>
+
+
+{{ slug|json_script:"room_slug" }}
+
+
+<script>
+  const chatbox = document.querySelector("#chatbox");
+
+
+  function scrollToBottom() {
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+
+  scrollToBottom();
+
+
+  const roomName = JSON.parse(document.getElementById('room_slug').textContent);
+  const chatSocket = new WebSocket("ws://" + window.location.host + "/ws/" + roomName + "/");
+
+
+  chatSocket.onopen = function () {
+    console.log("Conexión establecida con el servidor.");
+  };
+
+
+  chatSocket.onclose = function () {
+    console.log("Conexión cerrada inesperadamente.");
+  };
+
+
+  document.querySelector("#my_input").focus();
+  document.querySelector("#my_input").onkeyup = function (e) {
+    if (e.keyCode == 13) {
+      e.preventDefault();
+      document.querySelector("#submit_button").click();
+    }
+  };
+
+
+  // Funcionalidad de envío de mensaje
+  document.querySelector("#submit_button").onclick = function () {
+    var messageInput = document.querySelector("#my_input").value;
+    var fileInput = document.querySelector("#file_input").files[0];
+
+
+    if (messageInput.length == 0 && !fileInput) {
+      alert("Escribe un mensaje o selecciona un archivo antes de enviar.");
+    } else {
+      var messageData = {
+        message: messageInput,
+        username: "{{ request.user.username }}",
+        room_name: "{{ room_name }}",
+      };
+
+
+      if (fileInput) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          messageData.file_data = event.target.result;
+          messageData.file_name = fileInput.name;
+          chatSocket.send(JSON.stringify(messageData)); // Enviar el mensaje con el archivo
+        };
+        reader.readAsDataURL(fileInput); // Convierte el archivo a base64
+      } else {
+        chatSocket.send(JSON.stringify(messageData)); // Solo mensaje
+      }
+    }
+
+
+    // Limpiar el input de mensaje y archivo
+    document.querySelector("#my_input").value = "";
+    document.querySelector("#file_input").value = "";
+
+
+    // Limpiar la vista previa del archivo
+    document.getElementById('file_preview_container').style.display = 'none';
+    document.getElementById('image_preview').style.display = 'none';
+    document.getElementById('file_name').textContent = '';
+  };
+
+
+  // Funcionalidad de emojis
+  document.querySelectorAll('.emoji-select').forEach(item => {
+    item.addEventListener('click', function() {
+      const emoji = this.dataset.emoji;
+      const inputField = document.querySelector("#my_input");
+      inputField.value += emoji; // Añadir el emoji al input
+      inputField.focus(); // Mantener el foco en el campo de entrada
+    });
+  });
+
+
+  // Recibiendo mensajes del WebSocket
+  chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    var div = document.createElement("div");
+
+
+    if (data.type === "system") {
+      div.innerHTML = `<i>${data.message}</i>`;
+      div.classList.add("system-message");
+    } else {
+      div.innerHTML = `<b>${data.username}</b>: ${data.message}`;
+      div.classList.add("chat-message");
+
+
+      if (data.username === "{{ request.user.username }}") {
+        div.classList.add("text-right");
+      } else {
+        div.classList.add("text-left");
+      }
+
+
+      // Si hay datos de archivo (imagen o archivo adjunto)
+      if (data.file_url) {
+        if (data.file_url.startsWith("data:image")) {  // Si es una imagen en base64
+          var image = document.createElement("img");
+          image.src = data.file_url;
+          image.style.maxWidth = "200px";
+          div.appendChild(image);
+        } else {
+          var fileLink = document.createElement("a");
+          fileLink.href = data.file_url;
+          fileLink.target = "_blank";
+          fileLink.classList.add("file-link");
+          fileLink.innerHTML = "Ver archivo";
+          div.appendChild(fileLink);
+        }
+      }
+    }
+
+
+    document.querySelector("#chatbox").appendChild(div);
+    scrollToBottom();
+  };
+
+
+  // Funcionalidad de vista previa de archivo
+  document.getElementById('file_input').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    const previewContainer = document.getElementById('file_preview_container');
+    const imagePreview = document.getElementById('image_preview');
+    const fileName = document.getElementById('file_name');
+   
+    if (file) {
+      fileName.textContent = file.name;
+      previewContainer.style.display = 'flex';
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        imagePreview.style.display = 'none';
+      }
+    }
+  });
+</script>
+
+
+
+
+{% else %}
+<div class="container">
+  <div class="alert d-flex justify-content-between" role="alert">
+    <h5>No has iniciado sesión</h5>
+    <a href="{% url 'login' %}">
+      <button type="button" class="btn btn-logout">Iniciar sesión</button>
+    </a>
+  </div>
+</div>
+{% endif %}
+
+
+{% endblock %}

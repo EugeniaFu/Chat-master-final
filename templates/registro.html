@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro{% endblock %}
+
+{% block content %}
+<head>
+    <style>
+        body {
+            background: linear-gradient(135deg, #b39ddb, #9575cd); /* Lila claro */
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            margin: 50px auto;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #6a1b9a; /* Morado oscuro */
+        }
+
+        h2 {
+            text-align: center;
+            color: #6a1b9a;
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #8e24aa; /* Morado medio */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #7b1fa2; /* Morado oscuro */
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #6a1b9a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Registro</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Registrarse</button>
+        </form>
+    </div>
+</body>
+
+{% endblock %}

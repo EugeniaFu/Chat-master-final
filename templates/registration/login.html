@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<style>
+  body {
+    background: linear-gradient(135deg, #b39ddb, #9575cd); /* Gradiente morado */
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border-top: 5px solid #673ab7; /* Borde superior morado */
+  }
+
+  .login-header {
+    font-size: 24px;
+    font-weight: bold;
+    color: #5e35b1; /* Morado oscuro */
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    font-weight: bold;
+    color: #512da8; /* Morado medio */
+  }
+
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #7e57c2; /* Morado suave */
+    outline: none;
+  }
+
+  .btn-login {
+    background: #7b1fa2; /* Morado fuerte */
+    color: white;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  .btn-login:hover {
+    background: #6a1b9a; /* Morado más oscuro */
+    transform: scale(1.05);
+  }
+
+  .register-link {
+    display: block;
+    margin-top: 15px;
+    color: #4a148c; /* Morado profundo */
+    font-weight: bold;
+  }
+
+  .register-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="login-container">
+  <div class="login-header">Bienvenido 💜</div>
+
+  <form method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+      {{ form.as_p }}
+    </div>
+
+    <button type="submit" class="btn-login">Iniciar sesión</button>
+  </form>
+
+  <a href="{% url 'registro' %}" class="register-link">¿No tienes cuenta? Regístrate aquí</a>
+</div>
+
+{% endblock %}

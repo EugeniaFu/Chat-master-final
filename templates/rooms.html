@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<style>
+  body {
+    background: linear-gradient(135deg, #b39ddb, #9575cd); /* Fondo morado */
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: auto;
+  }
+
+  .alert {
+    background: #ede7f6; /* Morado claro */
+    color: #5e35b1; /* Morado fuerte */
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-logout {
+    background: #7b1fa2; /* Morado fuerte */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  .btn-logout:hover {
+    background: #6a1b9a;
+    transform: scale(1.05);
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    border-top: 5px solid #5e35b1;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+  }
+
+  .card-title {
+    color: #512da8; /* Morado medio */
+  }
+
+  .btn-room {
+    background: #5e35b1; /* Morado fuerte */
+    color: white;
+    border-radius: 20px;
+    padding: 8px 15px;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  .btn-room:hover {
+    background: #7b1fa2;
+    transform: scale(1.05);
+  }
+
+  .text-center.text-white {
+    color: #ede7f6 !important; /* Texto blanco con tono morado */
+  }
+</style>
+
+<div class="container">
+  <div class="alert d-flex justify-content-between" role="alert">
+    <h5>Salas o Grupos de conversaciones del sistema.</h5>
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-logout">Cerrar sesión</button>
+    </form>        
+  </div>
+
+  {% if rooms %}
+    <div class="row">
+      {% for room in rooms %}
+        <div class="col-md-4 d-flex pb-3">
+          <div class="card text-center">
+            <h3 class="card-title">{{ room.name }}</h3>
+            <p class="card-text">Este es un grupo público de mensajería.</p>
+            <a href="/{{ room.slug }}" class="btn btn-room">Unirte a la sala</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-white">No existen salas de conversación!</p>
+  {% endif %}
+</div>
+
+{% else %}
+<div class="container">
+  <div class="alert d-flex justify-content-between" role="alert">
+    <h5>No has iniciado sesión!</h5>
+    <a href="{% url 'login' %}">
+      <button type="button" class="btn btn-logout">Iniciar sesión</button>
+    </a>
+  </div>
+</div>  
+{% endif %}
+{% endblock %}
